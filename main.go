@@ -3,7 +3,6 @@ package main
 import "fmt"
 import "net/http"
 import "os"
-import "time"
 import "github.com/fzzbt/radix/redis"
 
 func main() {
@@ -19,6 +18,10 @@ func main() {
 		}
 
 		if r.Method == "GET" {
+			conf := redis.DefaultConfig()
+			c := redis.NewClient(conf)
+			defer c.Close()
+
 			// TODO allow channel size to be configurable
 			lines := make(chan string)
 			h := func(msg *redis.Message) {
@@ -28,13 +31,12 @@ func main() {
 				}
 			}
 
-			// TODO do we need a mutex here?
 			sub, err := c.Subscription(h)
 			if err != nil {
 				panic(err)
 			}
 			defer sub.Close()
-			sub.Subscribe("mux")
+			sub.Subscribe(r.FormValue("channel"))
 
 			for l := range lines {
 				fmt.Fprintf(w, "%s\n", l)
