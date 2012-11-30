@@ -7,13 +7,36 @@ import "os"
 import "github.com/fzzbt/radix/redis"
 
 func redisUrl() url.URL {
-	u, err := url.Parse(os.Getenv("REDIS_URL"))
+	// TODO this is dumb.  be smarter.
+	s := os.Getenv("REDIS_URL")
+	if s == "" {
+		s = os.Getenv("REDISTOGO_URL")
+		if s == "" {
+			s = os.Getenv("OPENREDIS_URL")
+			if s == "" {
+				s = os.Getenv("MYREDIS_URL")
+				if s == "" {
+					s = os.Getenv("REDISGREEN_URL")
+					if s == "" {
+						s = os.Getenv("REDISCLOUD_URL")
+						if s == "" {
+							s = "redis://localhost:6379"
+						}
+					}
+				}
+			}
+		}
+	}
+
+	u, err := url.Parse(s)
 	if err != nil {
-		u, _ = url.Parse("redis://localhost:6379")
+		fmt.Fprintln(os.Stderr, "error:", err)
+		os.Exit(1)
 	}
 	return *u
 }
 
+// TODO support domain sockets
 func redisConf() redis.Config {
 	u := redisUrl()
 
