@@ -1,6 +1,6 @@
 # muxd
 
-An http abstraction on top of redis pubsub.
+A data multiplexer.
 
 ## Build
 
@@ -12,10 +12,18 @@ $ go get
 
 Redis
 
-## Deployment
+## Local Deployment
 
 ```bash
 $ PORT=8080 REDIS_URL=redis://localhost:6379 ./muxd
+```
+
+## Heroku
+
+```bash
+$ heroku create -b https://github.com/kr/heroku-buildpack-go.git
+$ heroku addons:add redistogo
+$ git push heroku master
 ```
 
 ## Usage
