@@ -43,6 +43,13 @@ func redisConf() redis.Config {
 	conf := redis.DefaultConfig()
 	conf.Network = "tcp"
 	conf.Address = u.Host
+	if u.User != nil {
+
+		pass, set := u.User.Password()
+		if set {
+			conf.Password = pass
+		}
+	}
 	return conf
 }
 
