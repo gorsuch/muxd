@@ -14,6 +14,7 @@ func main() {
 	h := func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "POST" {
 			// TODO return error if these are not set
+			// TODO do we need a mutex here?
 			c.Publish(r.FormValue("channel"), r.FormValue("data"))
 		}
 
@@ -27,6 +28,7 @@ func main() {
 				}
 			}
 
+			// TODO do we need a mutex here?
 			sub, err := c.Subscription(h)
 			if err != nil {
 				panic(err)
