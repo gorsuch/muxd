@@ -17,6 +17,28 @@ func main() {
 		}
 
 		if r.Method == "GET" {
+			lines := make(chan string)
+			h := func(msg *redis.Message) {
+				switch msg.Type {
+				case redis.MessageMessage:
+					lines <- msg.Payload
+				}
+			}
+
+			sub, err := c.Subscription(h)
+			if err != nil {
+				panic(err)
+			}
+			defer sub.Close()
+			sub.Subscribe("mux")
+
+			for l := range lines {
+				fmt.Fprintf(w, "%s\n", l)
+				if f, ok := w.(http.Flusher); ok {
+					f.Flush()
+				}
+			}
+
 			for {
 				fmt.Fprintf(w, "%s\n", r.Method)
 				if f, ok := w.(http.Flusher); ok {
