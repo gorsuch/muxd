@@ -6,14 +6,20 @@ import "net/url"
 import "os"
 import "github.com/fzzbt/radix/redis"
 
-func redisConf() redis.Config {
-	redisUrl, err := url.Parse(os.Getenv("REDIS_URL"))
+func redisUrl() url.URL {
+	u, err := url.Parse(os.Getenv("REDIS_URL"))
 	if err != nil {
-		redisUrl, _ = url.Parse("redis://localhost:6379")
+		u, _ = url.Parse("redis://localhost:6379")
 	}
+	return *u
+}
+
+func redisConf() redis.Config {
+	u := redisUrl()
+
 	conf := redis.DefaultConfig()
 	conf.Network = "tcp"
-	conf.Address = redisUrl.Host
+	conf.Address = u.Host
 	return conf
 }
 
