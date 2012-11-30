@@ -2,12 +2,23 @@ package main
 
 import "fmt"
 import "net/http"
+import "net/url"
 import "os"
 import "github.com/fzzbt/radix/redis"
 
-func main() {
+func redisConf() redis.Config {
+	redisUrl, err := url.Parse(os.Getenv("REDIS_URL"))
+	if err != nil {
+		redisUrl, _ = url.Parse("redis://localhost:6379")
+	}
 	conf := redis.DefaultConfig()
-	c := redis.NewClient(conf)
+	conf.Network = "tcp"
+	conf.Address = redisUrl.Host
+	return conf
+}
+
+func main() {
+	c := redis.NewClient(redisConf())
 	defer c.Close()
 
 	h := func(w http.ResponseWriter, r *http.Request) {
@@ -18,8 +29,7 @@ func main() {
 		}
 
 		if r.Method == "GET" {
-			conf := redis.DefaultConfig()
-			c := redis.NewClient(conf)
+			c := redis.NewClient(redisConf())
 			defer c.Close()
 
 			// TODO allow channel size to be configurable
