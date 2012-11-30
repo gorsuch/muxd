@@ -13,10 +13,12 @@ func main() {
 
 	h := func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "POST" {
-			c.Publish("mux", r.FormValue("data"))
+			// TODO return error if these are not set
+			c.Publish(r.FormValue("channel"), r.FormValue("data"))
 		}
 
 		if r.Method == "GET" {
+			// TODO allow channel size to be configurable
 			lines := make(chan string)
 			h := func(msg *redis.Message) {
 				switch msg.Type {
@@ -37,14 +39,6 @@ func main() {
 				if f, ok := w.(http.Flusher); ok {
 					f.Flush()
 				}
-			}
-
-			for {
-				fmt.Fprintf(w, "%s\n", r.Method)
-				if f, ok := w.(http.Flusher); ok {
-					f.Flush()
-				}
-				time.Sleep(time.Second)
 			}
 		}
 	}
