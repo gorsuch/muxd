@@ -60,6 +60,7 @@ func main() {
 		}
 
 		if r.Method == "GET" {
+			// spawn a new client since we'll be modifing pubsub behavior
 			c := redis.NewClient(redisConf())
 			defer c.Close()
 
