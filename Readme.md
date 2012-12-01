@@ -1,6 +1,6 @@
 # muxd
 
-A data multiplexer.
+experimental line muxing daemon
 
 ## Build
 
