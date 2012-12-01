@@ -6,26 +6,21 @@ import "net/url"
 import "os"
 import "github.com/fzzbt/radix/redis"
 
-func redisUrl() url.URL {
-	// TODO this is dumb.  be smarter.
-	s := os.Getenv("REDIS_URL")
-	if s == "" {
-		s = os.Getenv("REDISTOGO_URL")
-		if s == "" {
-			s = os.Getenv("OPENREDIS_URL")
-			if s == "" {
-				s = os.Getenv("MYREDIS_URL")
-				if s == "" {
-					s = os.Getenv("REDISGREEN_URL")
-					if s == "" {
-						s = os.Getenv("REDISCLOUD_URL")
-						if s == "" {
-							s = "redis://localhost:6379"
-						}
-					}
-				}
-			}
+func searchEnv(list []string) string {
+	for _, x := range list {
+		s := os.Getenv(x)
+		if len(s) > 0 {
+			return s
 		}
+	}
+
+	return ""
+}
+
+func redisUrl() url.URL {
+	s := searchEnv([]string{"REDIS_URL", "REDISTOGO_URL", "OPENREDIS_URL", "MYREDIS_URL", "REDISGREEN_URL", "REDISCLOUD_URL"})
+	if s == "" {
+		s = "redis://localhost:6379"
 	}
 
 	u, err := url.Parse(s)
