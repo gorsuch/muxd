@@ -38,4 +38,4 @@ $ curl http://localhost:8080?channel=foobar
 $ curl -X POST -d data=neato http://localhost:8080?channel=foobar
 ```
 
-Also see [mux](https://github.com/gorsuch/mux) a cli tool built to interact with muxd.
+Also see [mux](https://github.com/gorsuch/mux), a cli tool built to interact with muxd.
